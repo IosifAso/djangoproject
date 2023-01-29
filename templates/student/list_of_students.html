@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %} List of students {% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-center">Filters</h3>
+                    </div>
+                    <form method="get">
+                        <div class="card-body">
+                            {{ my_filters.form.as_p }}
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-outline-danger">Search</button>
+                              <a href="{% url 'list-of-trainers' %}" class="btn btn-outline-danger">Reset</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-8">
+                {% if all_students %}
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th> First Name</th>
+                            <th> Last Name</th>
+                            <th> Email</th>
+                            <th> Is olympic?</th>
+                            <th> Start date</th>
+                            <th> End date</th>
+                            <th> Name of trainer</th>
+                            <th> Course</th>
+                            <th class="align-right"> Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for student in all_students %}
+                            <tr>
+                                <td>{{ student.first_name }}</td>
+                                <td>{{ student.last_name }}</td>
+                                <td>{{ student.email }}</td>
+                                <td>
+                                    {% if student.is_olympic %}
+                                        Yes
+                                    {% else %}
+                                        No
+                                    {% endif %}
+                                </td>
+                                <td>{{ student.start_date|date:"d-m-Y" }}</td>
+                                <td>{{ student.end_date|date:"d-m-Y" }}</td>
+                                <td>
+                                    {% if student.trainer %}
+                                        {{ student.trainer }}
+                                    {% else %}
+                                        No trainer
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if student.trainer.course %}
+                                        {{ student.trainer.course }}
+                                    {% else %}
+                                        No course
+                                    {% endif %}
+                                </td>
+                                <td class="align-right">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                            more actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="{% url 'update-student' student.id %}">Update</a>
+                                            </li>
+                                            <li><a class="dropdown-item" href="{% url 'delete-student' student.id %}">Delete</a>
+                                            </li>
+                                            <li><a class="dropdown-item"
+                                                   href="{% url 'details-of-student' student.id %}">View</a></li>
+                                            <li>
+                                                <button type="button" class="dropdown-item"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#student_{{ student.id }}">
+                                                    Inactive
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <div class="modal fade" id="student_{{ student.id }}" tabindex="-1"
+                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">{{ student }}</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Do you want to set {{ student.first_name }} {{ student.last_name }}
+                                                inactive?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    No
+                                                </button>
+                                                <a href="{% url 'inactive-student' student.id %}"
+                                                   class="btn btn-danger">Yes</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <h3 class="text-center"> No data found</h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
